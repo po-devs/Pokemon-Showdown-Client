@@ -3298,6 +3298,7 @@ function Battle(frame, logFrame, noPreload) {
 					actions += "" + ofpoke.getName() + " frisked its target and found one " + item.name + "!";
 					break;
 				case 'thief':
+                case 'pickpocket':
 				case 'covet':
 					actions += '' + poke.getName() + ' stole ' + ofpoke.getLowerName() + "'s " + item.name + "!";
 					self.resultAnim(poke, item.name, 'neutral', animDelay);

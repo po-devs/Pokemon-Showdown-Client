@@ -293,6 +293,16 @@ var BattlePOStatNames = { // PO style
 	spd: 'SDef',
 	spe: 'Spd'
 };
+BattlePOStatNames.nums = {
+    0: "hp",
+    1: "atk",
+    2: "def",
+    3: "spa",
+    4: "spd",
+    5: "spe",
+    6: "accuracy",
+    7: "evasion"
+}
 var BattleStatNames = { // proper style
 	hp: 'HP',
 	atk: 'Atk',
@@ -859,6 +869,10 @@ var Tools = {
 
     getMoveName: function(num) {
         return exports.BattleMovedex.nums[num];
+    },
+
+    getStatName : function (num) {
+        return POStatNames.nums[num];
     }
 };
 

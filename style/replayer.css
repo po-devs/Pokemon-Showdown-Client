@@ -19,6 +19,7 @@ body
 	background: #FAFCFE;
 }
 
+/*
 .header {
 	margin: 0;
 	background: #E1E8F2;
@@ -36,6 +37,8 @@ body
 	max-width: 550px;
 	margin: 0 auto;
 }
+*/
+
 .nav, .nav li, .nav-play, .nav-play li {
 	display: block;
 	list-style: none;

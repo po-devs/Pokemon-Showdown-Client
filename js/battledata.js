@@ -900,5 +900,9 @@ var Tools = {
 
     getTypeName : function(num) {
         return BattleTypes.nums[num];
+    },
+
+    getAbilityName : function(num) {
+        return exports.BattleAbilities.nums[num]
     }
 };

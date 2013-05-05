@@ -882,8 +882,15 @@ var Tools = {
 		return '<img src="ps/sprites/types/'+sanitizedType+'.png" alt="'+type+'" height="14" width="32"'+(b?' class="b"':'')+' />';
 	},
 
-    getSpecies: function(num) {
-        return exports.BattlePokedex.nums[num];
+    getSpecies: function(num, forme) {
+        var res = exports.BattlePokedex.nums[num];
+        if (forme && (num in exports.BattlePokedex.nums.formes)) {
+            var formes = exports.BattlePokedex.nums.formes[num].split(" ");
+            if (forme < formes.length) {
+                res += "-"+formes[forme].tu();
+            }
+        }
+        return res;
     },
 
     getMoveName: function(num) {

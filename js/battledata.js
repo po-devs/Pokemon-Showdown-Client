@@ -333,7 +333,7 @@ var Tools = {
 	resourcePrefix: (function() {
 		var prefix = '';
 		if (document.location.protocol === 'file:') prefix = 'http:';
-		return prefix + '//play.pokemonshowdown.com/';
+		return prefix + '//pokemon-online.eu/';
 	})(),
 
 	resolveAvatar: function(avatar) {
@@ -676,10 +676,27 @@ var Tools = {
 	getSpriteData: function(pokemon, siden, options) {
 		pokemon = Tools.getTemplate(pokemon);
 		var isBack = !siden;
-		var back = (siden?'':'-back');
+		var back = (siden?'':'back/');
 		var facing = (siden?'front':'back');
 		var cryurl = '';
-		var spriteid = pokemon.spriteid;
+
+        var sub = pokemon === "substitute";
+        var padd = function(num) {return ("00"+num).slice(-3);};
+
+        var spriteid = pokemon.num;
+
+        /*** PO change ***/
+        var forme = '';
+        if (pokemon.forme && pokemon.num in exports.BattlePokedex.nums.formes) {
+            var index = exports.BattlePokedex.nums.formes[pokemon.num].split(" ").indexOf(pokemon.forme.toLowerCase());
+            if (index != 0 && index != -1) {
+                forme = "-"+index;
+            }
+        }
+        if (sub) {
+            pokemon.num = "substitute";
+        }
+
 		if (window.BattlePokemonSprites && BattlePokemonSprites[pokemon.speciesid]) {
 			var num = '' + BattlePokemonSprites[pokemon.speciesid].num;
 			if (num.length < 3) num = '0' + num;
@@ -698,13 +715,14 @@ var Tools = {
 			};
 		}
 
-		if (pokemon.shiny) back += '-shiny';
+		if (pokemon.shiny) back += 'shiny/';
 		if (!Tools.prefs('noanim') && window.BattlePokemonSprites && BattlePokemonSprites[pokemon.speciesid] && BattlePokemonSprites[pokemon.speciesid][facing]) {
-			var url = Tools.resourcePrefix + 'sprites/bwani'+back;
-			url += '/'+spriteid;
+            var female = (pokemon.speciesid in BattlePokemonSprites) && BattlePokemonSprites[pokemon.speciesid][facing]['anif'] && pokemon.gender === 'F' ? "female/":"";
+			var url = Tools.resourcePrefix + 'images/pokemon/black-white/animated/'+back + female;
+			url += '/'+padd(spriteid);
+            url += forme;
 			var spriteType = 'ani';
-			if (BattlePokemonSprites[pokemon.speciesid][facing]['anif'] && pokemon.gender === 'F') {
-				url += '-f';
+			if (female) {
 				spriteType = 'anif';
 			}
 			url += '.gif';
@@ -720,7 +738,7 @@ var Tools = {
 		return {
 			w: 96,
 			h: 96,
-			url: Tools.resourcePrefix + 'sprites/bw'+back+'/' + spriteid + '.png',
+			url: Tools.resourcePrefix + 'images/pokemon/black-white/'+back+'/' + spriteid + forme + '.png',
 			cryurl: cryurl,
 			isBackSprite: isBack
 		};
@@ -789,16 +807,16 @@ var Tools = {
 		if (altNums[id]) {
 			num = altNums[id];
 		}
+        /*
 		if (pokemon && pokemon.gender === 'F') {
 			if (id === 'unfezant') num = 708;
 			else if (id === 'frillish') num = 721;
 			else if (id === 'jellicent') num = 722;
 		}
+		*/
 
-		var top = 8 + Math.floor(num / 16) * 32;
-		var left = (num % 16) * 32;
 		var fainted = (pokemon && pokemon.fainted?';opacity:.4':'');
-		return 'background:transparent url(' + Tools.resourcePrefix + 'sprites/bwicons-sheet.png?v0.8.5) no-repeat scroll -' + left + 'px -' + top + 'px' + fainted;
+		return 'background:transparent url(' + Tools.resourcePrefix + 'images/poke_img/' + num +'.png) no-repeat ' + fainted;
 	},
 
 	getTeambuilderSprite: function(pokemon) {

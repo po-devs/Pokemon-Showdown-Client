@@ -873,6 +873,9 @@ var Tools = {
 
     getStatName : function (num) {
         return POStatNames.nums[num];
+    },
+
+    getItemName : function(num) {
+        return exports.BattleItems.nums[num];
     }
 };
-

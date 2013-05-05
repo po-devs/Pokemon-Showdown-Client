@@ -311,6 +311,25 @@ var BattleStatNames = { // proper style
 	spd: 'SpD',
 	spe: 'Spe'
 };
+var BattleTypes = {};
+BattleTypes.nums = ["Normal",
+"Fighting",
+"Flying",
+"Poison",
+"Ground",
+"Rock",
+"Bug",
+"Ghost",
+"Steel",
+"Fire",
+"Water",
+"Grass",
+"Electric",
+"Psychic",
+"Ice",
+"Dragon",
+"Dark",
+"???"];
 
 var baseSpeciesChart = {
 	'unown': 1,
@@ -872,10 +891,14 @@ var Tools = {
     },
 
     getStatName : function (num) {
-        return POStatNames.nums[num];
+        return BattlePOStatNames.nums[num];
     },
 
     getItemName : function(num) {
         return exports.BattleItems.nums[num];
+    },
+
+    getTypeName : function(num) {
+        return BattleTypes.nums[num];
     }
 };

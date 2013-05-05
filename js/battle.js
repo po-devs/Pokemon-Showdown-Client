@@ -257,7 +257,7 @@ function Pokemon(species) {
 		if (selfP.hasVolatile(volatile)) return;
 		selfP.volatiles[volatile] = [volatile, null];
 		if (volatile === 'leechseed') {
-			selfP.side.battle.spriteElemsFront[selfP.side.n].append('<img src="' + Tools.resourcePrefix + 'fx/energyball.png" style="display:none;position:absolute" />');
+			selfP.side.battle.spriteElemsFront[selfP.side.n].append('<img src="' + 'ps/fx/energyball.png" style="display:none;position:absolute" />');
 			var curelem = selfP.side.battle.spriteElemsFront[selfP.side.n].children().last();
 			curelem.css(self.pos({
 				display: 'block',
@@ -269,7 +269,7 @@ function Pokemon(species) {
 			}, BattleEffects.energyball));
 			var elem = curelem;
 
-			selfP.side.battle.spriteElemsFront[selfP.side.n].append('<img src="' + Tools.resourcePrefix + 'fx/energyball.png" style="display:none;position:absolute" />');
+			selfP.side.battle.spriteElemsFront[selfP.side.n].append('<img src="' + 'ps/fx/energyball.png" style="display:none;position:absolute" />');
 			curelem = selfP.side.battle.spriteElemsFront[selfP.side.n].children().last();
 			curelem.css(self.pos({
 				display: 'block',
@@ -281,7 +281,7 @@ function Pokemon(species) {
 			}, BattleEffects.energyball));
 			elem = elem.add(curelem);
 
-			selfP.side.battle.spriteElemsFront[selfP.side.n].append('<img src="' + Tools.resourcePrefix + 'fx/energyball.png" style="display:none;position:absolute" />');
+			selfP.side.battle.spriteElemsFront[selfP.side.n].append('<img src="' + 'ps/fx/energyball.png" style="display:none;position:absolute" />');
 			curelem = selfP.side.battle.spriteElemsFront[selfP.side.n].children().last();
 			curelem.css(self.pos({
 				display: 'block',
@@ -667,7 +667,7 @@ function Battle(frame, logFrame, noPreload) {
 		self.logPreemptElem = logFrame.children().last();
 		logFrame.append('<div class="inner-after"></div>');
 
-		self.elem.append('<div class="backdrop" style="background-image:url(' + Tools.resourcePrefix + 'fx/' + self.backdropImage + ');display:block;opacity:0"></div>');
+		self.elem.append('<div class="backdrop" style="background-image:url(ps/fx/' + self.backdropImage + ');display:block;opacity:0"></div>');
 		self.bgElem = self.elem.children().last();
 		self.bgElem.animate({
 			opacity: 0.6
@@ -5011,10 +5011,12 @@ function Battle(frame, logFrame, noPreload) {
 		for (i in BattleEffects) {
 			if (BattleEffects[i].url) self.preloadImage(BattleEffects[i].url);
 		}
+        /*
 		self.preloadImage(Tools.resourcePrefix + 'fx/weather-raindance.jpg'); // rain is used often enough to precache
 		self.preloadImage(Tools.resourcePrefix + 'sprites/bw/substitute.png');
 		self.preloadImage(Tools.resourcePrefix + 'sprites/bw-back/substitute.png');
 		//self.preloadImage(Tools.resourcePrefix + 'fx/bg.jpg');
+		*/
 	};
 	this.preloadSounds = function () {
 		//self.preloadAudio(Tools.resourcePrefix + 'audio/bw-trainer-battle.mp3');

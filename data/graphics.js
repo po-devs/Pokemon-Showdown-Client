@@ -111,10 +111,9 @@ var BattleEffects = {
 	}
 };
 (function() {
-	if (!window.Tools || !Tools.resourcePrefix) return;
 	for (var i in BattleEffects) {
 		if (!BattleEffects[i].url) continue;
-		BattleEffects[i].url = Tools.resourcePrefix + BattleEffects[i].url;
+		BattleEffects[i].url = "ps/" + BattleEffects[i].url;
 	}
 })();
 var BattleBackdrops = [

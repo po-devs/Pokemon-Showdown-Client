@@ -776,11 +776,11 @@ var Tools = {
 	getIcon: function(pokemon) {
 		var num = 0;
 		if (pokemon === 'pokeball') {
-			return 'background:transparent url(' + Tools.resourcePrefix + 'sprites/bwicons-pokeball-sheet.png) no-repeat scroll -0px -8px';
+			return 'background:transparent url(ps/sprites/bwicons-pokeball-sheet.png) no-repeat scroll -0px -8px';
 		} else if (pokemon === 'pokeball-statused') {
-			return 'background:transparent url(' + Tools.resourcePrefix + 'sprites/bwicons-pokeball-sheet.png) no-repeat scroll -32px -8px';
+			return 'background:transparent url(ps/sprites/bwicons-pokeball-sheet.png) no-repeat scroll -32px -8px';
 		} else if (pokemon === 'pokeball-none') {
-			return 'background:transparent url(' + Tools.resourcePrefix + 'sprites/bwicons-pokeball-sheet.png) no-repeat scroll -64px -8px';
+			return 'background:transparent url(ps/sprites/bwicons-pokeball-sheet.png) no-repeat scroll -64px -8px';
 		}
 		var id = toId(pokemon);
 		if (pokemon && pokemon.species) id = toId(pokemon.species);
@@ -874,12 +874,12 @@ var Tools = {
 
 		var top = Math.floor(num / 16) * 24;
 		var left = (num % 16) * 24;
-		return 'background:transparent url(' + Tools.resourcePrefix + 'sprites/itemicons-sheet.png) no-repeat scroll -' + left + 'px -' + top + 'px';
+		return 'background:transparent url(ps/sprites/itemicons-sheet.png) no-repeat scroll -' + left + 'px -' + top + 'px';
 	},
 
 	getTypeIcon: function(type, b) { // b is just for utilichart.js
 		sanitizedType = type.replace(/\?/g,'%3f');
-		return '<img src="' + Tools.resourcePrefix + 'sprites/types/'+sanitizedType+'.png" alt="'+type+'" height="14" width="32"'+(b?' class="b"':'')+' />';
+		return '<img src="ps/sprites/types/'+sanitizedType+'.png" alt="'+type+'" height="14" width="32"'+(b?' class="b"':'')+' />';
 	},
 
     getSpecies: function(num) {

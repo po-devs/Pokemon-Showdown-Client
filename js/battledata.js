@@ -101,69 +101,6 @@ function hashColor(name) {
 	return colorCache[name];
 }
 
-function messageSanitize(str) {
-	str = Tools.escapeHTML(str);
-	// Don't format console commands (>>).
-	if (str.substr(0, 8) === '&gt;&gt;') return str;
-	// Don't format console results (<<).
-	if (str.substr(0, 8) === '&lt;&lt;') return str;
-	return str.
-		// ``code``
-		replace(/\`\`([^< ]([^<`]*?[^< ])?)\`\`/g, '<code>$1</code>').
-		// ~~strikethrough~~
-		replace(/\~\~([^< ]([^<]*?[^< ])?)\~\~/g, '<s>$1</s>').
-		// linking of URIs
-		replace(/(https?\:\/\/[a-z0-9-.]+(\/([^\s]*[^\s?.,])?)?|[a-z0-9]([a-z0-9-\.]*[a-z0-9])?\.(com|org|net|edu|us)((\/([^\s]*[^\s?.,])?)?|\b))/ig, function(uri) {
-			// Insert http:// before URIs without a URI scheme specified.
-			var fulluri = uri.replace(/^([a-z]*[^a-z:])/g, 'http://$1');
-			var event;
-			if (Tools.interstice.isWhitelisted(fulluri)) {
-				event = 'External link';
-			} else {
-				event = 'Interstice link';
-				fulluri = Tools.escapeHTML(Tools.interstice.getURI(Tools.unescapeHTML(fulluri)));
-			}
-			return '<a href="' + fulluri +
-				'" target="_blank" onclick="if (window._gaq) _gaq.push([\'_trackEvent\', \'' +
-				event +
-				'\', \'' + Tools.escapeQuotes(fulluri) + '\']);">' + uri + '</a>';
-		}).
-		// google [blah]
-		// google[blah]
-		//   Google search for 'blah'
-		replace(/(\bgoogle ?\[([^\]<]+)\])/ig, function(p0, p1, p2) {
-			p2 = Tools.escapeHTML(encodeURIComponent(Tools.unescapeHTML(p2)));
-			return '<a href="http://www.google.com/search?ie=UTF-8&q=' + p2 +
-				'" target="_blank">' + p1 + '</a>';
-		}).
-		// gl [blah]
-		// gl[blah
-		//   Google search for 'blah' and visit the first result ("I'm feeling lucky")
-		replace(/(\bgl ?\[([^\]<]+)\])/ig, function(p0, p1, p2) {
-			p2 = Tools.escapeHTML(encodeURIComponent(Tools.unescapeHTML(p2)));
-			return '<a href="http://www.google.com/search?ie=UTF-8&btnI&q=' + p2 +
-				'" target="_blank">' + p1 + '</a>';
-		}).
-		// wiki [blah]
-		//   Search Wikipedia for 'blah' (and visit the article for 'blah' if it exists)
-		replace(/(\bwiki ?\[([^\]<]+)\])/ig, function(p0, p1, p2) {
-			p2 = Tools.escapeHTML(encodeURIComponent(Tools.unescapeHTML(p2)));
-			return '<a href="http://en.wikipedia.org/w/index.php?title=Special:Search&search=' +
-				p2 + '" target="_blank">' + p1 + '</a>';
-		}).
-		// [[blah]]
-		//   Short form of gl[[blah]]
-		replace(/\[\[([^< ]([^<`]*?[^< ])?)\]\]/ig, function(p0, p1) {
-			var q = Tools.escapeHTML(encodeURIComponent(Tools.unescapeHTML(p1)));
-			return '<a href="http://www.google.com/search?ie=UTF-8&btnI&q=' + q +
-				'" target="_blank">' + p1 +'</a>';
-		}).
-		// __italics__
-		replace(/\_\_([^< ]([^<]*?[^< ])?)\_\_/g, '<i>$1</i>').
-		// **bold**
-		replace(/\*\*([^< ]([^<]*?[^< ])?)\*\*/g, '<b>$1</b>');
-}
-
 function toId(text) {
 	text = text || '';
 	if (typeof text === 'number') text = ''+text;
@@ -389,6 +326,80 @@ var Tools = {
 		return Tools.escapeHTML(formatid);
 	},
 
+	parseMessage: function(str) {
+		str = Tools.escapeHTML(str);
+		// Don't format console commands (>>).
+		if (str.substr(0, 8) === '&gt;&gt;') return str;
+		// Don't format console results (<<).
+		if (str.substr(0, 8) === '&lt;&lt;') return str;
+		return str.
+			// ``code``
+			replace(/\`\`([^< ]([^<`]*?[^< ])?)\`\`/g, '<code>$1</code>').
+			// ~~strikethrough~~
+			replace(/\~\~([^< ]([^<]*?[^< ])?)\~\~/g, '<s>$1</s>').
+			// linking of URIs
+			replace(/(https?\:\/\/[a-z0-9-.]+(\/([^\s]*[^\s?.,])?)?|[a-z0-9]([a-z0-9-\.]*[a-z0-9])?\.(com|org|net|edu|us)((\/([^\s]*[^\s?.,])?)?|\b))/ig, function(uri) {
+				// Insert http:// before URIs without a URI scheme specified.
+				var fulluri = uri.replace(/^([a-z]*[^a-z:])/g, 'http://$1');
+				var onclick;
+				var r = new RegExp('^https?://' +
+					document.location.hostname.replace(/\./g, '\\.') +
+					'/([a-zA-Z0-9-]+)$');
+				var m = r.exec(fulluri);
+				if (m) {
+					onclick = "return selectTab('" + m[1] + "');";
+				} else {
+					var event;
+					if (Tools.interstice.isWhitelisted(fulluri)) {
+						event = 'External link';
+					} else {
+						event = 'Interstice link';
+						fulluri = Tools.escapeHTML(Tools.interstice.getURI(
+								Tools.unescapeHTML(fulluri)
+						));
+					}
+					onclick = 'if (window._gaq) _gaq.push([\'_trackEvent\', \'' +
+							event + '\', \'' + Tools.escapeQuotes(fulluri) + '\']);';
+				}
+				return '<a href="' + fulluri +
+					'" target="_blank" onclick="' + onclick + '">' + uri + '</a>';
+			}).
+			// google [blah]
+			// google[blah]
+			//   Google search for 'blah'
+			replace(/(\bgoogle ?\[([^\]<]+)\])/ig, function(p0, p1, p2) {
+				p2 = Tools.escapeHTML(encodeURIComponent(Tools.unescapeHTML(p2)));
+				return '<a href="http://www.google.com/search?ie=UTF-8&q=' + p2 +
+					'" target="_blank">' + p1 + '</a>';
+			}).
+			// gl [blah]
+			// gl[blah
+			//   Google search for 'blah' and visit the first result ("I'm feeling lucky")
+			replace(/(\bgl ?\[([^\]<]+)\])/ig, function(p0, p1, p2) {
+				p2 = Tools.escapeHTML(encodeURIComponent(Tools.unescapeHTML(p2)));
+				return '<a href="http://www.google.com/search?ie=UTF-8&btnI&q=' + p2 +
+					'" target="_blank">' + p1 + '</a>';
+			}).
+			// wiki [blah]
+			//   Search Wikipedia for 'blah' (and visit the article for 'blah' if it exists)
+			replace(/(\bwiki ?\[([^\]<]+)\])/ig, function(p0, p1, p2) {
+				p2 = Tools.escapeHTML(encodeURIComponent(Tools.unescapeHTML(p2)));
+				return '<a href="http://en.wikipedia.org/w/index.php?title=Special:Search&search=' +
+					p2 + '" target="_blank">' + p1 + '</a>';
+			}).
+			// [[blah]]
+			//   Short form of gl[[blah]]
+			replace(/\[\[([^< ]([^<`]*?[^< ])?)\]\]/ig, function(p0, p1) {
+				var q = Tools.escapeHTML(encodeURIComponent(Tools.unescapeHTML(p1)));
+				return '<a href="http://www.google.com/search?ie=UTF-8&btnI&q=' + q +
+					'" target="_blank">' + p1 +'</a>';
+			}).
+			// __italics__
+			replace(/\_\_([^< ]([^<]*?[^< ])?)\_\_/g, '<i>$1</i>').
+			// **bold**
+			replace(/\*\*([^< ]([^<]*?[^< ])?)\*\*/g, '<b>$1</b>');
+	},
+
 	escapeHTML: function(str, jsEscapeToo) {
 		str = (str?''+str:'');
 		str = str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
@@ -409,6 +420,27 @@ var Tools = {
 	},
 
 	sanitizeHTML: (function() {
+		// Add <marquee> and <blink> to the whitelist.
+		// See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/marquee
+		// for the list of attributes.
+		$.extend(html4.ELEMENTS, {
+			'marquee': 0,
+			'blink': 0
+		});
+		$.extend(html4.ATTRIBS, {
+			'marquee::behavior': 0,
+			'marquee::bgcolor': 0,
+			'marquee::direction': 0,
+			'marquee::height': 0,
+			'marquee::hspace': 0,
+			'marquee::loop': 0,
+			'marquee::scrollamount': 0,
+			'marquee::scrolldelay': 0,
+			'marquee::truespeed': 0,
+			'marquee::vspace': 0,
+			'marquee::width': 0
+		});
+
 		var uriRewriter = function(uri) {
 			return uri;
 		};
@@ -486,7 +518,7 @@ var Tools = {
 				return false;
 			},
 			getURI: function(uri) {
-				return 'http://www.pokemonshowdown.com/interstice?uri=' + encodeURIComponent(uri);
+				return 'http://pokemonshowdown.com/interstice?uri=' + encodeURIComponent(uri);
 			}
 		};
 	})(),
@@ -575,7 +607,8 @@ var Tools = {
 
 			if (!move.exists && id.substr(0,11) === 'hiddenpower' && id.length > 11) {
 				var matches = /([a-z]*)([0-9]*)/.exec(id);
-				move = $.extend({}, window.BattleMovedex[matches[1]]);
+				move = (window.BattleMovedex && window.BattleMovedex[matches[1]]) || {};
+				move = $.extend({}, move);
 				move.basePower = matches[2];
 			}
 
@@ -730,7 +763,7 @@ var Tools = {
 			var num = '' + BattlePokemonSprites[pokemon.speciesid].num;
 			if (num.length < 3) num = '0' + num;
 			if (num.length < 3) num = '0' + num;
-			cryurl = Tools.resourcePrefix + 'audio/cries/' + num + '.wav';
+			cryurl = 'audio/cries/' + num + '.wav';
 		}
 
 		// April Fool's 2013
@@ -787,7 +820,7 @@ var Tools = {
 		if (pokemon && pokemon.volatiles && pokemon.volatiles.formechange && !pokemon.volatiles.transform) id = toId(pokemon.volatiles.formechange[2]);
 		if (pokemon && pokemon.num !== undefined) num = pokemon.num;
 		else if (window.BattlePokemonSprites && BattlePokemonSprites[id] && BattlePokemonSprites[id].num) num = BattlePokemonSprites[id].num;
-		else if (window.BattlePokedex[id] && BattlePokedex[id].num) num = BattlePokedex[id].num;
+		else if (window.BattlePokedex && window.BattlePokedex[id] && BattlePokedex[id].num) num = BattlePokedex[id].num;
 		if (num < 0) num = 0;
 		var altNums = {
 			"egg": 651,
@@ -878,8 +911,8 @@ var Tools = {
 	},
 
 	getTypeIcon: function(type, b) { // b is just for utilichart.js
-		sanitizedType = type.replace(/\?/g,'%3f');
-		return '<img src="ps/sprites/types/'+sanitizedType+'.png" alt="'+type+'" height="14" width="32"'+(b?' class="b"':'')+' />';
+		var sanitizedType = type.replace(/\?/g,'%3f');
+		return '<img src="ps/sprites/types/'+sanitizedType+'.png" alt="'+sanitizedType+'" height="14" width="32"'+(b?' class="b"':'')+' />';
 	},
 
     getSpecies: function(num, forme) {

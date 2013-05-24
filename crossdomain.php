@@ -2,15 +2,10 @@
 $config = array();
 
 $host = strtolower(strval(@$_REQUEST['host']));
-$devClient = false;
-if (preg_match('/^([a-z0-9-_\.]*?)\.beta\.psim\.us$/', $host, $m)) {
-	$config['host'] = $m[1];
-	$devClient = true;
-} else if (preg_match('/^([a-z0-9-_\.]*?)\.psim\.us$/', $host, $m)) {
+if (preg_match('/^([a-z0-9-_\.]*?)\.psim\.us$/', $host, $m)) {
 	$config['host'] = $m[1];
 	if ($config['host'] === 'logs') die; // not authorised
 	if ($config['host'] === 'sim') die; // not authorised
-	if ($config['host'] === 'beta') $config['host'] = 'showdown';
 } else if ($host === 'play.pokemonshowdown.com') {
 	$config['host'] = 'showdown-8000';
 } else {
@@ -50,28 +45,36 @@ if (isset($PokemonServers[$config['host']])) {
 	}
 
 	// see if this is actually a registered server
-	$ip = gethostbyname($config['host']);
-	foreach ($PokemonServers as &$server) {
-		if (!isset($server['ipcache'])) {
-			$server['ipcache'] = gethostbyname($server['server']);
-		}
-		if ($ip === $server['ipcache']) {
-			if (($config['port'] === $server['port']) ||
-					(isset($server['altport']) &&
-						$config['port'] === $server['altport'])) {
-				$path = isset($_REQUEST['path']) ? $_REQUEST['path'] : '';
-				$domain = ($devClient ? 'beta.' : '') . 'psim.us';
-				$config['redirect'] = 'http://' . $server['id'] . '.' . $domain . '/' . rawurlencode($path);
-				break;
+	if ($config['host'] !== 'localhost') {
+		$ip = gethostbyname($config['host']);
+		foreach ($PokemonServers as &$server) {
+			if (!isset($server['ipcache'])) {
+				$server['ipcache'] = gethostbyname($server['server']);
+			}
+			if ($ip === $server['ipcache']) {
+				if (($config['port'] === $server['port']) ||
+						(isset($server['altport']) &&
+							$config['port'] === $server['altport'])) {
+					$path = isset($_REQUEST['path']) ? $_REQUEST['path'] : '';
+					$config['redirect'] = 'http://' . $server['id'] . '.psim.us/' . rawurlencode($path);
+					break;
+				}
 			}
 		}
 	}
 }
+
+// For Internet Explorer.
+// See http://www.p3pwriter.com/LRN_111.asp
+// See also http://stackoverflow.com/questions/389456/cookie-blocked-not-saved-in-iframe-in-internet-explorer
+//
+// The privacy fields specified here should be accurate.
+header('P3P: CP="NOI CUR ADM DEV COM NAV STA OUR IND"');
 ?>
 <!DOCTYPE html>
-<script src="/js/jquery-2.0.0.min.js"></script>
-<script src="/js/jquery-cookie.js"></script>
-<script src="/js/jquery.json-2.3.min.js"></script>
+<script src="/js/lib/jquery-2.0.0.min.js"></script>
+<script src="/js/lib/jquery-cookie.js"></script>
+<script src="/js/lib/jquery.json-2.3.min.js"></script>
 <body>
 <script>
 (function() {

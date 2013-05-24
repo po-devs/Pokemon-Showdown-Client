@@ -394,7 +394,7 @@ License: GPLv2
 .trainer div.teamicons
 {
 	width: 97px;
-	height: 24px;
+	height: 32px;
 }
 .teamicons span
 {
@@ -792,5 +792,5 @@ License: GPLv2
 {
 	display: block;
 	width: 32px;
-	height: 24px;
+	height: 32px;
 }

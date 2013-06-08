@@ -306,7 +306,7 @@ var Tools = {
 		var avatarnum = Number(avatar);
 		if (!isNaN(avatarnum)) {
 			// default avatars
-			return Tools.resourcePrefix + 'sprites/trainers/' + avatarnum + '.png';
+			return Tools.resourcePrefix + 'images/trainers/' + avatarnum + '.png';
 		}
 		if (window.Config && Config.server && Config.server.registered) {
 			// custom avatar served by the server

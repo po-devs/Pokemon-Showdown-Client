@@ -749,8 +749,8 @@ var Tools = {
 
         /*** PO change ***/
         var forme = '';
-        if (pokemon.forme && pokemon.num in exports.BattlePokedex.nums.formes) {
-            var index = exports.BattlePokedex.nums.formes[pokemon.num].split(" ").indexOf(pokemon.forme.toLowerCase());
+        if (pokemon.forme && pokemon.num in exports.BattlePokedex.formes) {
+            var index = exports.BattlePokedex.formes[pokemon.num].split(" ").indexOf(pokemon.forme.toLowerCase());
             if (index != 0 && index != -1) {
                 forme = "-"+index;
             }
@@ -917,8 +917,8 @@ var Tools = {
 
     getSpecies: function(num, forme) {
         var res = exports.BattlePokedex.nums[num];
-        if (forme && (num in exports.BattlePokedex.nums.formes)) {
-            var formes = exports.BattlePokedex.nums.formes[num].split(" ");
+        if (forme && (num in exports.BattlePokedex.formes)) {
+            var formes = exports.BattlePokedex.formes[num].split(" ");
             if (forme < formes.length) {
                 res += "-"+formes[forme].tu();
             }
